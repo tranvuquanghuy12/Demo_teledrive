@@ -1,0 +1,41 @@
+# Tên của workflow
+name: Deploy TeleDrive Guide to GitHub Pages
+
+# Kích hoạt khi push lên nhánh "master"
+on:
+  push:
+    branches: [ master ] # Đã sửa từ main -> master cho anh
+
+# Cấp quyền
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Công việc cần làm
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Lấy code về
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Cấu hình Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 3. Upload code (từ thư mục gốc '.')
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.' # Upload tất cả file trong thư mục gốc
+
+      # 4. Deploy
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+

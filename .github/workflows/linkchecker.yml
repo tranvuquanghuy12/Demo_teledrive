@@ -1,0 +1,31 @@
+name: "Code Quality: Link Checker"
+
+# Chạy tự động khi có PR (Pull Request) nhắm tới nhánh chính
+on:
+  merge_group:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  linkchecker:
+    runs-on: ubuntu-latest
+    name: "Kiểm tra các liên kết (URL) trong dự án"
+    steps:
+      # Bước 1: Checkout code
+      - name: Tải mã nguồn
+        uses: actions/checkout@v3
+
+      # Bước 2: Chạy Lychee để kiểm tra URL
+      - name: Chạy Link Checker
+        uses: lycheeverse/lychee-action@v2.0.2
+        with:
+          # Chỉ định rõ chỉ quét file landscape.yml
+          input: './landscape.yml' 
+          # Yêu cầu thất bại nếu tìm thấy liên kết hỏng
+          fail: true 
+          # Loại trừ các mã trạng thái này khỏi lỗi (ví dụ: 401 Unauthorized, 403 Forbidden)
+          exclude: '401, 403, 429' 
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -1,0 +1,54 @@
+name: Preview
+
+# Cấp quyền ghi (write) cho Pull Requests để có thể đăng bình luận
+permissions:
+  pull-requests: write
+
+# Kích hoạt khi có PR nhắm tới main/master, chỉ khi file landscape.yml hoặc logo thay đổi
+on:
+  pull_request_target:
+    branches:
+      - main
+      - master
+    paths:
+      - 'landscape.yml'
+      - 'hosted_logos/*'
+    types:
+      - opened
+      - reopened
+      - synchronize # Chạy khi có commit mới vào PR
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    name: "Tạo và Đăng link Preview"
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          # Đây là URL của công cụ xem Landscape (thường dùng của CNCF để overlay data)
+          LANDSCAPE_URL: 'https://landscape.cncf.io'
+          DATA_FILE: 'landscape.yml'
+          LOGOS_PATH: 'hosted_logos'
+          OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
+          REPO: ${{ github.event.pull_request.head.repo.name }}
+          REF: ${{ github.event.pull_request.head.ref }}
+        with:
+          script: |
+            const { LANDSCAPE_URL, DATA_FILE, LOGOS_PATH, OWNER, REPO, REF } = process.env
+
+            // Xây dựng URL preview bằng cách dùng raw file từ nhánh PR
+            const dataUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${REF}/${DATA_FILE}`;
+            const logosUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${REF}/${LOGOS_PATH}`;
+            
+            // Kết hợp URL Data và Logo vào công cụ xem Landscape
+            const previewLink = `${LANDSCAPE_URL}/?overlay-data=${dataUrl}&overlay-logos=${logosUrl}`;
+
+            const comment = `**[✨ Xem trước thay đổi Teledrive Landscape](${previewLink})**\n\nBạn có thể xem trước các thay đổi trong file \`${DATA_FILE}\` của mình bằng cách truy cập liên kết trên.\n\n> [!NOTE]\n> Tính năng này sử dụng dữ liệu thô (raw data) của nhánh PR để overlay lên giao diện gốc và có thể không hoạt động như mong đợi. Vui lòng báo cáo nếu bạn gặp sự cố!`;
+
+            // Đăng bình luận lên Pull Request
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            })

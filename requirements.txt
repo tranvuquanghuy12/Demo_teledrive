@@ -1,0 +1,8 @@
+pyrogram
+pysocks
+motor
+aiohttp
+python-dotenv
+fastapi # <--- MỚI
+uvicorn[standard] # <--- MỚI
+python-multipart # <--- MỚI

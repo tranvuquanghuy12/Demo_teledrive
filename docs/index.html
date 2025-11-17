@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeleDrive - Hướng dẫn Triển khai</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="container">
+            <a href="#" class="home-icon"><i class="fas fa-home"></i></a>
+            <a href="#" onclick="loadContent('overview')">GIỚI THIỆU</a>
+            <a href="#" onclick="loadContent('deploy')">TRIỂN KHAI</a>
+            <a href="#" onclick="loadContent('operate')">VẬN HÀNH</a>
+            <a href="#" onclick="loadContent('troubleshooting')">XỬ LÝ LỖI</a>
+            <a href="#" onclick="loadContent('about')">LIÊN HỆ</a>
+        </div>
+    </nav>
+
+    <header class="banner">
+        <div class="banner-overlay">
+            <h1>HƯỚNG DẪN TELEDRIVE</h1>
+            <p>Giải pháp lưu trữ đám mây không giới hạn trên nền tảng Telegram</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="quick-links">
+            <div class="tile tile-green" onclick="loadContent('overview')">
+                <i class="fab fa-android"></i>
+                <span>Tổng Quan</span>
+            </div>
+            <div class="tile tile-teal" onclick="loadContent('deploy')">
+                <i class="fas fa-laptop-code"></i>
+                <span>Deploy Code</span>
+            </div>
+            <div class="tile tile-purple" onclick="loadContent('operate')">
+                <i class="fas fa-brain"></i>
+                <span>Vận Hành</span>
+            </div>
+            <div class="tile tile-red" onclick="loadContent('troubleshooting')">
+                <i class="fas fa-chess-knight"></i>
+                <span>Gỡ Lỗi</span>
+            </div>
+            <div class="tile tile-blue" onclick="loadContent('about')">
+                <i class="fab fa-windows"></i>
+                <span>Về Dev Team</span>
+            </div>
+            <div class="tile tile-dark" onclick="loadContent('upload_page')">
+                <i class="fab fa-telegram"></i>
+                <span>Upload lên telegram</span>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <main class="content-column">
+                <div class="breadcrumbs">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Trang chủ</span> <span class="sep">/</span> 
+                    <span id="breadcrumb-current">Tổng Quan</span>
+                </div>
+
+                <div id="content-display" class="post-content">
+                    <!-- Loading Spinner -->
+                    <div class="loader"></div>
+                </div>
+            </main>
+
+            <aside class="sidebar-column">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Tìm kiếm...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">CHỦ ĐỀ</h3>
+                    <ul id="guide-menu" class="widget-list">
+                        <li data-target="overview" class="active">Giới Thiệu Chung</li>
+                        <li data-target="operate">Vận hành</li>
+                        <li data-target="deploy">Deploy</li>
+                        <li data-target="troubleshooting">Các Lỗi Thường Gặp</li>
+                        <li data-target="about">Về chúng tôi</li>
+                        <li data-target="upload_page">
+                            <i class="fas fa-upload"></i> Tải File Lên (API)
+                        </li>
+            
+                    </ul>
+                    <div id="no-result" style="display:none; padding:10px; color:red;">Không tìm thấy</div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>Copyright &copy; 2025. Design by Tran Vu Quang Huy.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
