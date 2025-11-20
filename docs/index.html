@@ -50,20 +50,20 @@
                 <span>Tổng Quan</span>
             </div>
             
-            <div class="tile tile-teal" ">
+            <div class="tile tile-teal" onclick="toggleQuickLinkDropdown(this)"> 
                 <i class="fas fa-laptop-code"></i>
                 <span>TeleDrive</span>
-                <div class="dropdown-menu-nav">
+                <div class="dropdown-menu-nav" style="top: 90px; min-width: 100%; border-radius: 0 0 4px 4px;"> 
                     <a onclick="loadContent('deploy')">Deploy</a>
                     <a onclick="loadContent('operate')">Vận hành</a>
                     <a onclick="loadContent('troubleshooting')">Xử lý lỗi</a>
                 </div>
             </div>
             
-            <div class="tile tile-blue" onclick="loadContent('hadoop3')">
+            <div class="tile tile-blue" onclick="toggleQuickLinkDropdown(this)">
                 <i class="fab fa-windows"></i>
                 <span>Hadoop 3.0</span>
-                <div class="dropdown-menu-nav">
+                <div class="dropdown-menu-nav" style="top: 90px; min-width: 100%; border-radius: 0 0 4px 4px;"> 
                     <a onclick="loadContent('hadoop3')">Hadoop 3.0</a>
                     <a onclick="loadContent('troubleshooting')">Xử lý lỗi</a>
                 </div>
