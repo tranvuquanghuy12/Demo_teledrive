@@ -134,3 +134,44 @@ document.addEventListener('DOMContentLoaded', () => {
         loadContent(id);
     };
 });
+
+// Hàm xử lý việc hiển thị/ẩn dropdown
+function toggleDropdown(clickedTile) {
+    // 1. Lấy ID của dropdown cần thao tác
+    const dropdownId = clickedTile.getAttribute('data-dropdown-id');
+    if (!dropdownId) {
+        // Nếu không có dropdown ID, chỉ load content và kết thúc
+        return; 
+    }
+
+    const dropdownMenu = document.getElementById(dropdownId);
+    
+    // 2. Đóng tất cả các dropdown khác
+    const allTiles = document.querySelectorAll('.tile');
+    allTiles.forEach(tile => {
+        if (tile !== clickedTile && tile.classList.contains('active-dropdown')) {
+            tile.classList.remove('active-dropdown');
+        }
+    });
+
+    // 3. Toggle (chuyển đổi trạng thái) dropdown hiện tại
+    clickedTile.classList.toggle('active-dropdown');
+
+    // Ngăn sự kiện click từ tile truyền lên các phần tử khác nếu cần
+    event.stopPropagation();
+}
+
+// Thêm sự kiện lắng nghe toàn bộ body để đóng dropdown khi click ra ngoài
+document.body.addEventListener('click', function(event) {
+    const isClickInsideTile = event.target.closest('.tile');
+    if (!isClickInsideTile) {
+        // Nếu click ra ngoài, đóng tất cả dropdown
+        const activeTiles = document.querySelectorAll('.tile.active-dropdown');
+        activeTiles.forEach(tile => {
+            tile.classList.remove('active-dropdown');
+        });
+    }
+});
+
+// Lưu ý: Đảm bảo rằng hàm loadContent() của anh vẫn hoạt động bên trong các li.
+// Ví dụ: <li onclick="loadContent('overview-gioithieu')">...</li>

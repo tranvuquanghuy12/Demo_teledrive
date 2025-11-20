@@ -30,30 +30,53 @@
 
     <div class="container">
         <div class="quick-links">
-            <div class="tile tile-green" onclick="loadContent('overview')">
+            <div class="tile tile-green" data-dropdown-id="overview-menu" onclick="toggleDropdown(this)">
                 <img src="./images/TLU.webp" alt="Logo Đại học Thủy Lợi" class="school-logo-sidebar">
                 <span>Tổng Quan</span>
+                <ul id="overview-menu" class="dropdown-menu">
+                    <li onclick="loadContent('overview-gioithieu')">Giới thiệu chung</li>
+                    <li onclick="loadContent('overview-tinhnang')">Tính năng cốt lõi</li>
+                    <li onclick="loadContent('overview-nguyenly')">Nguyên lý hoạt động</li>
+                </ul>
             </div>
-            <div class="tile tile-teal" onclick="loadContent('deploy')">
+            
+            <div class="tile tile-teal" data-dropdown-id="deploy-menu" onclick="toggleDropdown(this)">
                 <i class="fas fa-laptop-code"></i>
                 <span>Deploy Code</span>
+                <ul id="deploy-menu" class="dropdown-menu">
+                    <li onclick="loadContent('deploy-docker')">Cài đặt Docker</li>
+                    <li onclick="loadContent('deploy-telegram-keys')">Lấy Keys API</li>
+                    <li onclick="loadContent('deploy-backend')">Cấu hình Backend</li>
+                </ul>
             </div>
-            <div class="tile tile-purple" onclick="loadContent('operate')">
+            
+            <div class="tile tile-purple" data-dropdown-id="operate-menu" onclick="toggleDropdown(this)">
                 <i class="fas fa-brain"></i>
                 <span>Vận Hành</span>
+                <ul id="operate-menu" class="dropdown-menu">
+                    <li onclick="loadContent('operate-start')">Khởi động hệ thống</li>
+                    <li onclick="loadContent('operate-stop')">Dừng/Tắt hệ thống</li>
+                </ul>
             </div>
-            <div class="tile tile-red" onclick="loadContent('troubleshooting')">
+            
+            <div class="tile tile-red" data-dropdown-id="troubleshooting-menu" onclick="toggleDropdown(this)">
                 <i class="fas fa-chess-knight"></i>
                 <span>Gỡ Lỗi</span>
+                <ul id="troubleshooting-menu" class="dropdown-menu">
+                    <li onclick="loadContent('troubleshooting-keys')">Lỗi API Keys</li>
+                    <li onclick="loadContent('troubleshooting-docker')">Lỗi Docker</li>
+                </ul>
             </div>
-            <div class="tile tile-blue" onclick="loadContent('about')">
+            
+            <div class="tile tile-blue" onclick="loadContent('hadoop3')">
                 <i class="fab fa-windows"></i>
-                <span>Về Dev Team</span>
+                <span>Hadoop 3.0</span>
             </div>
             <div class="tile tile-dark" onclick="loadContent('upload_page')">
                 <i class="fab fa-telegram"></i>
-                <span>Upload lên telegram</span>
+                <span>Upload lên Telegram</span>
             </div>
+        </div>
         </div>
 
         <div class="main-layout">
