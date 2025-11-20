@@ -1,0 +1,86 @@
+<h1>🛠️ Xử Lý Sự Cố Thường Gặp Khi Cài Đặt Hadoop 3.3.6</h1>
+<p>Dưới đây là tổng hợp các vấn đề anh có thể gặp phải (và đã gặp phải!) khi triển khai Hadoop 3.3.6 ở chế độ giả lập phân tán (Pseudo-Distributed Mode) trên Ubuntu/WSL2 và cách khắc phục chúng.</p>
+
+<hr>
+
+<h2>1. Lỗi Lệnh Linux trong Môi trường Windows (Lỗi Môi trường)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Cố gắng chạy các lệnh Linux như <code>sudo</code>, <code>apt</code>, hoặc <code>jps</code> trực tiếp trong **Windows Command Prompt (CMD)** hoặc **PowerShell**.</li>
+    <li>Môi trường **WSL (Ubuntu)** chưa được khởi động.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Đảm bảo đang ở WSL:** Luôn thực hiện các lệnh cài đặt Hadoop trong cửa sổ **Ubuntu/WSL2** đã được cài đặt.</li>
+    <li>**Khởi động lại WSL:** Nếu gặp lỗi, chạy <code>wsl --shutdown</code> trong CMD rồi mở lại Ubuntu.</li>
+</ol>
+
+<hr>
+
+<h2>2. Lỗi Quyền Ghi/Giải Nén (Operation Not Permitted)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Thao tác tải (<code>wget</code>) hoặc giải nén (<code>tar -xzvf</code>) file Hadoop trên **phân vùng Windows được mount** (ví dụ: thư mục <code>/mnt/d/PROJECT</code>).</li>
+    <li>Hệ thống Linux bị giới hạn quyền ghi metadata (như `utime`) trên hệ thống file NTFS của Windows.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Di chuyển thư mục làm việc:** Luôn tải và giải nén file Hadoop trong **thư mục Home của Linux** (<code>~</code> hoặc <code>/home/$USER</code>).</li>
+    <li>Chạy lệnh chuyển hướng và tải lại:</li>
+    <pre><code>cd ~
+wget [đường_dẫn_Hadoop]
+tar -xzvf hadoop-3.3.6.tar.gz</code></pre>
+</ol>
+
+<hr>
+
+<h2>3. Lỗi NameNode/DataNode Không Khởi động (Lỗi Khởi tạo)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>**Sai đường dẫn Java:** Đường dẫn <code>JAVA_HOME</code> trong <code>hadoop-env.sh</code> hoặc <code>.bashrc</code> không chính xác.</li>
+    <li>**Thiếu Thư mục Dữ liệu:** Các thư mục được khai báo trong <code>hdfs-site.xml</code> chưa được tạo (`namenode`, `datanode`).</li>
+    <li>**Chưa Format NameNode:** Quá trình khởi tạo HDFS chưa được thực hiện.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Kiểm tra JAVA_HOME:** Đảm bảo <code>export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64</code> đã được đặt đúng trong cả <code>.bashrc</code> và <code>hadoop-env.sh</code>.</li>
+    <li>**Tạo Thư mục:** Chạy lệnh tạo thư mục nếu chưa làm:</li>
+    <pre><code>mkdir -p /usr/local/hadoop/data/namenode
+mkdir -p /usr/local/hadoop/data/datanode</code></pre>
+    <li>**Format NameNode:** Chạy lệnh format (CHỈ MỘT LẦN!):</li>
+    <pre><code>hdfs namenode -format</code></pre>
+</ol>
+
+<hr>
+
+<h2>4. Lỗi "command not found" (Lỗi Cú pháp)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Cố gắng mở file bằng cách gõ tên file (ví dụ: <code>core-site.xml</code>) thay vì gọi trình soạn thảo.</li>
+    <li>Chưa tải lại biến môi trường sau khi chỉnh sửa <code>.bashrc</code>.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Dùng nano:** Luôn mở file cấu hình bằng trình soạn thảo:</li>
+    <pre><code>nano core-site.xml</code></pre>
+    <li>**Source lại cấu hình:** Sau khi sửa <code>.bashrc</code>, luôn chạy:</li>
+    <pre><code>source ~/.bashrc</code></pre>
+</ol>
+
+<hr>
+
+<h2>5. Lỗi SSH: Bị hỏi Mật khẩu hoặc Bị kẹt ở Xác nhận 'yes'</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Chưa chạy lệnh <code>cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys</code> (chưa ủy quyền).</li>
+    <li>Lần đầu SSH trên WSL bị lỗi xử lý nhập liệu.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Ủy quyền:** Đảm bảo đã chạy: <code>cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys</code> và <code>chmod 0600 ~/.ssh/authorized_keys</code>.</li>
+    <li>**Bỏ qua xác nhận:** Dùng lệnh:</li>
+    <pre><code>ssh -o StrictHostKeyChecking=no localhost</code></pre>
+    <li>**Nếu vẫn lỗi:** Chạy <code>ssh-keygen -R localhost</code> để xóa khóa cũ và thử lại.</li>
+</ol>
+
+<p>Nếu bạn gặp phải lỗi khác không có trong danh sách này, hãy kiểm tra lại kỹ lưỡng các file XML (đặc biệt là lỗi chính tả) và log file trong <code>/usr/local/hadoop/logs</code> để tìm manh mối.</p>
