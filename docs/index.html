@@ -50,27 +50,30 @@
                 <span>Tổng Quan</span>
             </div>
             
-            <div class="tile tile-teal" onclick="loadContent('deploy')">
+            <div class="tile tile-teal" ">
                 <i class="fas fa-laptop-code"></i>
-                <span>Deploy Code</span>
+                <span>TeleDrive</span>
+                <ul class="dropdown-menu-nav">
+                    <a onclick="loadContent('deploy')">Deploy</a>
+                    <a onclick="loadContent('operate')">Vận hành</a>
+                    <a onclick="loadContent('troubleshooting')">Xử lý lỗi</a>
+                </ul>
             </div>
-            
-            <div class="tile tile-purple" onclick="loadContent('operate')">
-                <i class="fas fa-brain"></i>
-                <span>Vận Hành</span>
-            </div>
-            
-            
             
             <div class="tile tile-blue" onclick="loadContent('hadoop3')">
                 <i class="fab fa-windows"></i>
                 <span>Hadoop 3.0</span>
+                <ul class="dropdown-menu-nav">
+                    <a onclick="loadContent('hadoop3')">Hadoop 3.0</a>
+                    <a onclick="loadContent('troubleshooting')">Xử lý lỗi</a>
+                </ul>
             </div>
             
             <div class="tile tile-dark" onclick="loadContent('about')">
                 <i class="fas fa-users"></i>
                 <span>Về Chúng Tôi</span>
             </div>
+            
             <div class="tile tile-red" onclick="loadContent('upload_page')">
                 <i class="fas fa-chess-knight"></i>
                 <span>Gửi lên TeleDrive</span>
