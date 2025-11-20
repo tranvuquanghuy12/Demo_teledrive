@@ -83,4 +83,78 @@ mkdir -p /usr/local/hadoop/data/datanode</code></pre>
     <li>**Nếu vẫn lỗi:** Chạy <code>ssh-keygen -R localhost</code> để xóa khóa cũ và thử lại.</li>
 </ol>
 
+<hr>
+
+<h2>6. Lỗi Kết Nối SSH bị Từ Chối (Connection Refused)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Dịch vụ SSH trên máy Linux (WSL2) chưa được khởi động hoặc bị chặn.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Cài đặt và Khởi động lại dịch vụ SSH:**</li>
+    <p>Trong Ubuntu/Linux, anh chạy các lệnh sau để đảm bảo dịch vụ SSH được cài đặt và hoạt động:</p>
+    <pre><code>sudo apt-get install openssh-client openssh-server
+sudo service ssh restart
+sudo service sshd restart</code></pre>
+    <li>**Kiểm tra lại Passwordless SSH:** Sau khi khởi động lại, anh nên chạy lại lệnh kiểm tra <code>ssh localhost</code>.</li>
+</ol>
+
+<hr>
+
+<h2>7. Lỗi Xung đột Phiên bản Java (Java/Javac Version Conflict)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Máy tính cài đặt nhiều phiên bản Java (ví dụ: Java 17, 11, và 8).</li>
+    <li>Phiên bản Java được đặt trong biến <code>JAVA_HOME</code> không được Apache Hadoop 3.3.6 hỗ trợ (Hadoop 3.3.x hỗ trợ tốt nhất Java 8 và 11).</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Kiểm tra phiên bản đang dùng:** Chạy <code>java -version</code>. Nếu nó không phải là Java 8, anh cần đổi phiên bản.</li>
+    <li>**Đảm bảo `JAVA_HOME` đúng:** Kiểm tra và đảm bảo <code>export JAVA_HOME</code> trong <code>.bashrc</code> và <code>hadoop-env.sh</code> đều trỏ chính xác đến thư mục của **Java 8**.</li>
+</ol>
+
+<hr>
+
+<h2>8. Lỗi Đường Dẫn Cấu Hình Không Đồng Nhất (Path Mismatch)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Anh làm theo các hướng dẫn khác nhau sử dụng các đường dẫn khác nhau (ví dụ: <code>$HADOOP_HOME=/usr/local/hadoop</code> hoặc <code>$HADOOP_HOME=/home/hadoop/hadoop-3.3.0</code>).</li>
+    <li>Đường dẫn trong <code>.bashrc</code> không đồng bộ với đường dẫn được khai báo trong các file cấu hình XML.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Chọn một đường dẫn duy nhất:** (Ví dụ: <code>/usr/local/hadoop</code>) và sử dụng nhất quán trong mọi file.</li>
+    <li>**Kiểm tra chéo:** Đảm bảo đường dẫn <code>$HADOOP_HOME</code> trong <code>hadoop-env.sh</code>, <code>core-site.xml</code> (cho Namenode/Datanode directory), và <code>yarn-site.xml</code> đều khớp nhau.</li>
+</ol>
+
+<hr>
+
+<h2>9. Lỗi Lệnh Khởi động (Incorrect Execution Path)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Chạy lệnh <code>hdfs namenode -format</code> hoặc <code>start-all.sh</code> mà không ở trong thư mục chính của Hadoop (ví dụ: đang ở thư mục Home).</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Sử dụng biến môi trường:** Dùng lệnh trực tiếp từ biến môi trường đã thiết lập để không cần bận tâm đang ở thư mục nào:</li>
+    <pre><code>$HADOOP_HOME/bin/hdfs namenode -format
+$HADOOP_HOME/sbin/start-all.sh</code></pre>
+    <li>**Hoặc sử dụng lệnh đã có trong PATH:** Nếu <code>source ~/.bashrc</code> đã thành công, chỉ cần gõ: <code>hdfs namenode -format</code> và <code>start-all.sh</code>.</li>
+</ol>
+
+<hr>
+
+<h2>10. Vấn đề Phân quyền người dùng (User Permission Issues)</h2>
+<h3>Nguyên nhân:</h3>
+<ul>
+    <li>Thiếu quyền <code>sudo</code> hoặc quyền truy cập thư mục.</li>
+    <li>Hadoop được cài đặt dưới một người dùng khác mà người dùng hiện tại không có quyền thao tác.</li>
+</ul>
+<h3>Cách khắc phục:</h3>
+<ol>
+    <li>**Cấp quyền sở hữu:** Đảm bảo thư mục cài đặt thuộc về anh: <code>sudo chown -R $USER:$USER /usr/local/hadoop</code>.</li>
+    <li>**Tạo người dùng chuyên dụng (Giải pháp nâng cao):** Nếu gặp lỗi phân quyền hệ thống nghiêm trọng, anh có thể tạo một nhóm và người dùng chuyên biệt cho Hadoop, sau đó cấp quyền <code>sudo</code> cho người dùng đó (sử dụng <code>visudo</code>).</li>
+</ol>
+
 <p>Nếu bạn gặp phải lỗi khác không có trong danh sách này, hãy kiểm tra lại kỹ lưỡng các file XML (đặc biệt là lỗi chính tả) và log file trong <code>/usr/local/hadoop/logs</code> để tìm manh mối.</p>
