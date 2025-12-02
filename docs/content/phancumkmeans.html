@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng Dẫn Triển Khai Dự Án Phân Cụm Khách Hàng K-Means (OOP Pipeline)</title>
+
+    <!-- ICON -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Segoe UI';
+            background: #f5f6fa;
+            margin: 0;
+            padding: 20px 40px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 25px;
+        }
+        p { font-size: 15px; }
+
+        .tech-stack {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .tech-icons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .tech-icon {
+            text-align: center;
+            font-size: 14px;
+            width: 120px;
+        }
+        .tech-icon i {
+            font-size: 26px;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #bdc3c7;
+            text-align: left;
+            padding: 8px;
+            font-size: 14px;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .section-title {
+            background: #2980b9;
+            padding: 8px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+            margin-top: 30px;
+        }
+
+        code {
+            background: #e8e8e8;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h1>Hướng Dẫn Triển Khai Dự Án Phân Cụm Khách Hàng K-Means<br>(Phiên bản OOP + 3 Notebook)</h1>
+
+<div class="tech-stack">
+    <h2>Công Nghệ Sử Dụng</h2>
+    <div class="tech-icons">
+        <div class="tech-icon"><i class="fab fa-python"></i><br>Python 3.10</div>
+        <div class="tech-icon"><i class="fas fa-brain"></i><br>Scikit-Learn</div>
+        <div class="tech-icon"><i class="fas fa-chart-line"></i><br>Pandas/NumPy</div>
+        <div class="tech-icon"><i class="fas fa-cubes"></i><br>K-Means</div>
+        <div class="tech-icon"><i class="fas fa-book"></i><br>Jupyter Notebook</div>
+    </div>
+</div>
+
+<hr>
+
+<h2>0. Mục tiêu dự án</h2>
+<p>Dự án thực hiện phân cụm khách hàng bằng thuật toán <b>K-Means (Unsupervised Learning)</b> dựa trên dữ liệu giao dịch 500.000 dòng.</p>
+
+<p>Mục tiêu chính:</p>
+<ul>
+    <li>Làm sạch dữ liệu giao dịch thô</li>
+    <li>Tạo bộ 16 feature mô tả hành vi khách hàng</li>
+    <li>Dùng Box-Cox + chuẩn hóa để xử lý phân phối lệch</li>
+    <li>Chọn số cụm tối ưu bằng Elbow & Silhouette</li>
+    <li>Phân tích K = 3 và K = 4 để tìm insight marketing</li>
+    <li>Gợi ý chiến lược marketing cho từng cụm khách</li>
+</ul>
+
+<hr>
+
+<!-- 🔵🔵🔵 PHẦN EM CHÈN THÊM CHO ANH TẠI ĐÂY 🔵🔵🔵 -->
+
+<h2>Hướng Dẫn Triển Khai Dự Án (Thực Hành Từ A → Z)</h2>
+
+<div class="section-title">1. Clone dự án về máy</div>
+
+<code>git clone https://github.com/.../advanced_customer_segmentation.git</code>
+
+<p>Hoặc tải file ZIP và giải nén.</p>
+
+<div class="section-title">2. Mở CMD đúng thư mục project</div>
+
+<p>Trong Windows Explorer:</p>
+<code>D:\PROJECT\ML\Phan-cum-khach-hang-kmeans\advanced_customer_segmentation</code>
+
+<p>Gõ:</p>
+<code>cmd</code>
+
+<p>→ CMD mở ngay đúng thư mục (tránh lỗi Failed to fetch khi lưu notebook).</p>
+
+<div class="section-title">3. Tạo môi trường ảo và kích hoạt</div>
+
+<code>
+python -m venv venv<br>
+venv\Scripts\activate
+</code>
+
+<div class="section-title">4. Cài thư viện</div>
+
+<code>pip install --upgrade pip setuptools wheel</code><br>
+<code>pip install -r requirements.txt</code>
+
+<p>Nếu lỗi numpy/sklearn → Python của bạn quá mới → hãy dùng Python 3.10.</p>
+
+<div class="section-title">5. Cài Jupyter Notebook</div>
+
+<code>pip install notebook</code><br>
+<code>jupyter notebook</code>
+<img src="./images/phancum5.png" alt="Ảnh tele" style="max-width: 80%; display: block; margin: 20px auto;">
+
+<p>Browser sẽ mở trang:</p>
+<code>http://localhost:8888/tree</code>
+<img src="./images/phancum3.png" alt="Ảnh tele" style="max-width: 80%; display: block; margin: 20px auto;">
+<p>Nhấp vào folder <b>notebooks</b> và mở lần lượt 3 file .ipynb.</p>
+
+<div class="section-title">6. Chạy 3 Notebook theo thứ tự</div>
+
+<p><b>1) 01_cleaning_and_eda.ipynb</b> – Làm sạch dữ liệu + RFM + EDA</p>
+<p><b>2) 02_feature_engineering.ipynb</b> – Tạo 16 features + Box-Cox + Scaling</p>
+<p><b>3) 03_modeling.ipynb</b> – Elbow, Silhouette, KMeans, PCA, phân tích cụm</p>
+<h3>Lúc này ấn run all cell để chạy và bạn sẽ thấy các cell code đang chạy và hiển thị kết quả xuống dưới</h3>
+<img src="./images/phancumdangchay.png" alt="Ảnh tele" style="max-width: 80%; display: block; margin: 20px auto;">
+
+<p>✔ Notebook phải chạy theo đúng thứ tự vì notebook sau phụ thuộc dữ liệu của notebook trước.</p>
+<h3>Sau khi chạy xong, bạn sẽ thấy cái biểu đồ thể hiện và đánh giá các cụm khách hàng và các chỉ số lquan </h3>
+<img src="./images/phancum1.png" alt="Ảnh tele" style="max-width: 80%; display: block; margin: 20px auto;">
+<img src="./images/phancum2.png" alt="Ảnh tele" style="max-width: 80%; display: block; margin: 20px auto;">
+
+<div class="section-title">7. Lưu ý khi chạy Jupyter</div>
+
+<p>• Luôn mở đúng thư mục project → tránh lỗi “Failed to fetch” khi lưu file</p>
+<img src="./images/phancumloiluu.png" alt="Ảnh tele" style="max-width: 80%; display: block; margin: 20px auto;">
+
+<p>• Dùng Run All để chạy toàn bộ cell</p>
+<p>• Nếu lỗi tiến trình (IProgress) → chạy:</p>
+
+<code>pip install ipywidgets</code>
+<p>Đây là lệnh để bạn tải xuống ipywidgets nhằm lưu tiến trình các file notebook đã chạy trong cùng 1 folder để làm dữ liệu cho file notebook tiếp theo</p>
+
+<hr>
+
+<!-- 🔵🔵🔵 PHẦN ĐẾN ĐÂY KẾT THÚC —

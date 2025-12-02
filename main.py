@@ -1,72 +1,38 @@
 import os
-import threading
-from pyrogram import Client, filters, idle
-from flask import Flask, request, jsonify, send_file
-import io
+from pyrogram import Client, filters, idle # Import idle để giữ bot chạy
 
-# --- 1. CẤU HÌNH ---
+# Lấy các key đã được xác nhận là có tồn tại
 API_ID = os.environ.get('API_ID')
 API_HASH = os.environ.get('API_HASH')
-BOT_TOKEN = os.environ.get('BOT_TOKEN')
+BOT_TOKEN = os.environ.get('BOT_TOKEN') # The crucial key for bot mode
 
-# Khởi tạo Flask App
-web_app = Flask(__name__)
-# Khởi tạo Pyrogram Client (global)
-tg_client = Client(
-    "bot_session_final", 
-    api_id=int(API_ID),
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN, 
-    workdir="./bot_data"
-)
+# Kiểm tra (đã được xác nhận là OK)
+if not all([API_ID, API_HASH, BOT_TOKEN]):
+    print("FATAL ERROR: Environment variables are missing or undefined!")
+    exit(1)
 
-# --- 2. HÀM XỬ LÝ PYROGRAM ---
-@tg_client.on_message(filters.command("start"))
-async def start_command(client, message):
-    await message.reply_text("Backend đã sẵn sàng nhận lệnh từ web! Gửi file lên để thử nghiệm.")
+print("SUCCESS: All necessary API keys found. Initializing Bot Client...")
 
-# --- 3. API ENDPOINT CHO UPLOAD (Cầu Nối HTTP) ---
-@web_app.route('/api/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({"status": "error", "message": "Missing file in request"}), 400
-
-    file = request.files['file']
-    caption = request.form.get('caption', 'Uploaded from Web UI')
+try:
+    # KHỞI TẠO CLIENT DƯỚI DẠNG BOT (SỬ DỤNG TOKEN)
+    # SỬA LỖI: Bỏ chế độ User Client để tránh hỏi SĐT
+    app = Client(
+        "bot_session_final", 
+        api_id=int(API_ID),
+        api_hash=API_HASH,
+        bot_token=BOT_TOKEN, # <-- Dùng token để tránh Interactive Login
+        workdir="./bot_data"
+    )
     
-    try:
-        # Sử dụng BytesIO để Pyrogram có thể đọc file trực tiếp từ bộ nhớ
-        file_bytes = io.BytesIO(file.read())
-        file_bytes.name = file.filename # Đặt tên file
+    # Định nghĩa một lệnh đơn giản để kiểm tra
+    @app.on_message(filters.command("start"))
+    async def start_command(client, message):
+        await message.reply_text("Server của anh đã chạy ngon lành! Em có thể bắt đầu lưu file!")
 
-        # CHẠY LỆNH PYROGRAM TRONG TIẾN TRÌNH KHÁC (async/await)
-        # Gửi file lên Telegram (ví dụ: gửi vào một channel cố định)
-        message_object = tg_client.send_document(
-            chat_id="@ten_channel_cua_ban_de_luu_file", # THAY ĐỔI: Thay bằng username của channel
-            document=file_bytes,
-            caption=caption
-        )
-        # Yêu cầu này cần được xử lý trong môi trường async của Pyrogram. 
-        # Cần dùng threading/asyncio riêng cho Flask. Đây là đoạn code phức tạp nhất.
-        
-        # NOTE: Do Flask không hỗ trợ async/await, nên chúng ta sẽ trả về một response giả
-        # Nếu muốn code hoàn chỉnh, anh cần dùng FastAPI hoặc thư viện hỗ trợ async/await.
-        
-        return jsonify({
-            "status": "success", 
-            "message": f"File '{file.filename}' đang được xử lý gửi đi.", 
-            "filename": file.filename
-        }), 200
-        
-    except Exception as e:
-        return jsonify({"status": "error", "message": f"Server crash during upload: {e}"}), 500
+    print("Pyrogram Bot Client is starting and listening...")
+    app.start() # Khởi động client
+    idle()  # 🌟 FIX: Giữ client chạy liên tục
+    app.stop()
 
-
-# --- 4. HÀM CHẠY 2 TIẾN TRÌNH ---
-if __name__ == '__main__':
-    # 🌟 Tiến trình 1: Khởi động Pyrogram Client (Bot)
-    tg_thread = threading.Thread(target=tg_client.run)
-    tg_thread.start()
-    
-    # 🌟 Tiến trình 2: Khởi động Web Server (Flask)
-    web_app.run(host='0.0.0.0', port=8080)
+except Exception as e:
+    print(f"FATAL RUNTIME ERROR: Client failed to start. Error: {e}")

@@ -9,6 +9,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; padding: 20px; }
         h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
         h2 { color: #2980b9; margin-top: 30px; }
+        h3 { color: #2980b9; margin-top: 25px; }
         hr { border: 0; border-top: 1px solid #ecf0f1; margin: 20px 0; }
         p { margin-bottom: 15px; }
         /* Style cho bảng lệnh (giống trang tính) */
@@ -24,11 +25,13 @@
         .tech-icon i { font-size: 24px; color: #2c3e50; margin-bottom: 5px; }
         /* Thêm style cho code trong bảng */
         code { background-color: #eee; padding: 2px 4px; border-radius: 3px; font-family: monospace; font-size: 13px; }
+        pre { background-color: #2c3e50; color: #ecf0f1; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        pre code { background-color: transparent; color: inherit; padding: 0; border-radius: 0; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<h1 style="color: red;">Sổ Tay Lệnh Cài Đặt Hadoop 3.3.6 (Single Node)</h1>
+<h1 style="color: red;">📜 Sổ Tay Lệnh Cài Đặt & Vận Hành Hadoop 3.3.6 (Single Node)</h1>
 <p>Chào mừng đến với bảng tổng hợp các lệnh cần thiết để triển khai hệ thống **Hadoop 3.3.6** trên môi trường **Ubuntu/WSL2**. Đây là phiên bản tối giản nhất, được thiết kế để anh dễ dàng in ra hoặc theo dõi trên một trang.</p>
 
 <div class="tech-stack">
@@ -56,14 +59,14 @@
 
 <hr>
 
-<h2>Bảng Tổng Hợp Lệnh Theo Trình Tự</h2>
+<h2>I. Bảng Tổng Hợp Lệnh Theo Trình Tự</h2>
 
 <table>
     <thead>
         <tr>
             <th>STT</th>
             <th>Cú pháp Lệnh</th>
-            <th>Ý nghĩa (Meaning/Mục đích)</th>
+            <th>Ý nghĩa (Mục đích)</th>
         </tr>
     </thead>
     <tbody>
@@ -149,7 +152,7 @@
         <tr>
             <td>15.</td>
             <td><code>jps</code></td>
-            <td>Kiểm tra các tiến trình (Xác nhận 5 Daemon của Hadoop đang chạy).</td>
+            <td>Kiểm tra tiến trình (Xác nhận 5 Daemon của Hadoop đang chạy).</td>
         </tr>
         <tr>
             <td>16.</td>
@@ -194,54 +197,31 @@
 
 <hr>
 
-<h2>Hình ảnh chạy thành công Hadoop</h2> 
-<img src="./images/hdsd_hadoop3.png" alt="Ảnh chạy thành công Hadoop" style="max-width: 80%; display: block; margin: 20px auto;">
+<h2>II. Hướng Dẫn Khởi Động Lại Hệ Thống</h2>
 
-
-<h1 style="color: red;">🔄 Hướng Dẫn Khởi Động Lại Hadoop Sau Khi Tắt Máy</h1>
-<p>Vì Hadoop chạy bên trong môi trường ảo **Ubuntu/WSL2**, việc khởi động lại hệ thống cần hai bước chính: Khởi động lại môi trường Linux và sau đó khởi động lại các dịch vụ Java của Hadoop (NameNode, ResourceManager, v.v.).</p>
-
-<hr>
-
-<h2>1. Khởi động Môi trường Ubuntu (WSL2)</h2>
-<p>Sau khi máy tính được bật lên, anh cần khởi động lại tiến trình WSL:</p>
-<ol>
-    <li>Mở CMD hoặc PowerShell.</li>
-    <li>Gõ lệnh sau:</li>
-</ol>
+<h3>1. Khởi động Môi trường Ubuntu (WSL2)</h3>
+<p>Mở CMD hoặc PowerShell và gõ lệnh:</p>
 <pre><code>wsl</code></pre>
-<p>Lệnh này sẽ tự động khởi động và đưa anh vào terminal của Ubuntu.</p>
 
-<hr>
+<h3>2. Kiểm tra và Khởi động Dịch vụ Hadoop</h3>
+<p>Sau khi vào terminal Ubuntu, anh thực hiện chuỗi lệnh sau:</p>
 
-<h2>2. Kiểm tra và Khởi động Dịch vụ Hadoop</h2>
-<p>Sau khi vào terminal Ubuntu, anh thực hiện chuỗi lệnh sau để đưa cụm Hadoop trở lại hoạt động.</p>
-
-<h3>2.1. Kiểm tra trạng thái hiện tại</h3>
-<p>Đảm bảo không còn dịch vụ cũ nào đang chạy ngầm:</p>
-<pre><code>jps</code></pre>
-<p><em>(Kết quả mong đợi: Chỉ thấy tiến trình `Jps` và `bash`).</em></p>
-
-<h3>2.2. Khởi động lại Cụm</h3>
-<p>Chạy lệnh này để nạp lại cấu hình và khởi động các dịch vụ HDFS/YARN:</p>
+<h4>2.1. Kiểm tra trạng thái và Khởi động</h4>
+<p>Chạy <code>jps</code> để kiểm tra. Nếu thiếu tiến trình, chạy lệnh khởi động:</p>
 <pre><code>start-all.sh</code></pre>
 
-<h3>2.3. Xác nhận và Truy cập Web UI</h3>
-<p>Chạy lại <code>jps</code> để xác nhận đã có đủ 5 tiến trình, sau đó anh có thể truy cập:</p>
+<h4>2.2. Tắt Toàn bộ Hệ thống (Khi Dùng Xong)</h4>
+<p>Để tiết kiệm tài nguyên máy tính, anh nên tắt hẳn Hadoop và tiến trình WSL2:</p>
 <ul>
-    <li>**HDFS (Lưu trữ):** <code>http://localhost:9870</code></li>
-    <li>**YARN (Xử lý Job):** <code>http://localhost:8088</code></li>
-</ul>
-
-<hr>
-
-<h2>3. 🛑 Tắt Toàn bộ Hệ thống (Khi Dùng Xong)</h2>
-<p>Để tiết kiệm tài nguyên máy tính, anh nên tắt hẳn Hadoop và tiến trình WSL2.</p>
-<ol>
     <li>**Tắt Hadoop (Trong Ubuntu):**</li>
     <pre><code>stop-all.sh</code></pre>
     <li>**Tắt WSL2 (Trong CMD/PowerShell Windows):**</li>
     <pre><code>wsl --shutdown</code></pre>
-</ol>
+</ul>
+
+<hr>
+
+<img src="./images/hdsd_hadoop3.png" alt="Ảnh chạy thành công Hadoop" style="max-width: 80%; display: block; margin: 20px auto;">
+
 </body>
 </html>
